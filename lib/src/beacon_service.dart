@@ -1,9 +1,8 @@
 import 'dart:convert';
 
-import 'package:beacon_client/src/network_service.dart';
-
 import 'models/event.dart';
 import 'models/task.dart';
+import 'network_service.dart';
 
 class BeaconService {
   final String accountId;
@@ -12,46 +11,26 @@ class BeaconService {
     networkService = NetworkService();
   }
 
-  static const baseUrl = 'https://api.beaconcrm.org/v1/';
+  static const baseUrl = 'https://api.beaconcrm.org/v1';
 
   late final NetworkService networkService;
 
   String get authority => '$baseUrl/account/$accountId';
 
-  Future<List<Task>> getTasks(Map<String, dynamic> filter) async {
+  Future<List<Task>> getTasks({Map<String, dynamic> filter = const {}}) async {
     const path = '/entities/task/filter';
     final results = await _getList(path, filter: filter);
-    final tasks = results
-        .map<Task>(Task.fromBeacon)
-        .where((t) => t.isTemplate)
-        .toList();
-
-    if (tasks.isEmpty) {
-      throw BeaconException('No template tasks found');
-    }
+    final tasks = results.map<Task>(Task.fromBeacon).toList();
 
     return tasks;
   }
 
-  Future<Event> getInitEvent(int id) async {
+  Future<Event> getEvent(int id) async {
     final response = await networkService.get(
       '$authority/entity/event/$id',
       headers: _signedHeaders,
     );
-
     final event = Event.fromBeacon(response);
-
-    if (event.startDate == null) {
-      throw BeaconException('Event ${event.name} has no start date');
-    }
-
-    if (event.startDate!.isBefore(DateTime.now())) {
-      throw BeaconException('Event ${event.name} is closed');
-    }
-
-    if (!event.hasHost) {
-      throw BeaconException('Event ${event.name} has no host');
-    }
 
     return event;
   }
@@ -90,15 +69,5 @@ class BeaconService {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
-  }
-}
-
-class BeaconException implements Exception {
-  final String message;
-  BeaconException(this.message);
-
-  @override
-  String toString() {
-    return 'BeaconException: $message';
   }
 }

@@ -11,8 +11,7 @@ and the Flutter guide for
 [developing packages and plugins](https://flutter.dev/to/develop-packages). 
 -->
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+Dart abstraction over the BeaconCRM API.
 
 ## Features
 
@@ -20,16 +19,21 @@ TODO: List what your package can do. Maybe include images, gifs, or videos.
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+Install the package:
+
+```
+dart pub add beacon_client
+```
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
 
 ```dart
-const like = 'sample';
+import 'package:beacon_client/beacon_client.dart';
+final crm = BeaconService(
+        accountId: beaconOrgId,
+        apiKey: Env.apiKey,
+      );
 ```
 
 ## Additional information

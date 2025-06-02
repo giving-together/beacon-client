@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:beacon_client/src/network_exception.dart';
+import 'network_exception.dart';
 import 'package:http/http.dart' as http;
 
 class NetworkService {
@@ -16,8 +16,9 @@ class NetworkService {
     log('GET request to $url');
     final uri = Uri.parse(url);
     try {
-      final response =
-          await http.get(uri, headers: headers).timeout(defaultTimeout);
+      final response = await http
+          .get(uri, headers: headers)
+          .timeout(defaultTimeout);
 
       return _getBody(response);
     } catch (e) {
