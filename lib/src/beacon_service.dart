@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:beacon_client/src/models/person.dart';
+
 import 'models/event.dart';
 import 'models/task.dart';
 import 'network_service.dart';
@@ -25,6 +27,15 @@ class BeaconService {
     return tasks;
   }
 
+  Future<List<Event>> getEvents({
+    Map<String, dynamic> filter = const {},
+  }) async {
+    const path = '/entities/event/filter?sort_by=start_date&sort_direction=asc';
+    final results = await _getList(path, filter: filter);
+    final events = results.map<Event>(Event.fromBeacon).toList();
+    return events;
+  }
+
   Future<Event> getEvent(int id) async {
     final response = await networkService.get(
       '$authority/entity/event/$id',
@@ -42,6 +53,14 @@ class BeaconService {
       headers: _signedHeaders,
       body: jsonEncode(body),
     );
+  }
+
+  Future<List<Person>> getPeople({
+    Map<String, dynamic> filter = const {},
+  }) async {
+    const path = '/entities/person/filter';
+    final results = await _getList(path, filter: filter);
+    return results.map<Person>(Person.fromBeacon).toList();
   }
 
   Future<List<Map<String, dynamic>>> _getList(
